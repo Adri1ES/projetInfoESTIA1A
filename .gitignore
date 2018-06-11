@@ -1,0 +1,9 @@
+
+configuration.jpg
+*.dll
+*.o
+*.exe
+.settings/org.eclipse.cdt.managedbuilder.core.prefs
+.settings/language.settings.xml
+.project
+.cproject
