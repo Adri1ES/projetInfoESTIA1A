@@ -8,37 +8,16 @@
 extern GtkBuilder *builder;
 
 
-/* initialiser les spin_button */
+void on_window1_destroy(GtkObject *object, gpointer user_data){
+  printf("Fermeture de la fenetre.\n");
+  gtk_main_quit();
+}
 
 void init_spin_button (GtkSpinButton *spb, double min_val, double max_val, double val, double step, int digits) {
   gtk_spin_button_set_digits (spb, digits) ;
   gtk_spin_button_set_range (spb, min_val, max_val) ;
   gtk_spin_button_set_value (spb, val) ;
   gtk_spin_button_set_increments (spb, step, step) ;
-}
-
-void on_window1_realize (GtkObject *object, gpointer user_data){
-
-	GtkSpinButton *spinbutton_vitesse = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "spinbutton_vitesse"));
-	init_spin_button (spinbutton_vitesse, 0.0, 10000.0, 100.0, 0.1, 1);
-
-	GtkSpinButton *spinbutton_poids = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "spinbutton_poids"));
-	init_spin_button (spinbutton_poids, 0.0, 10000.0, 100.0, 0.1, 1);
-
-	GtkSpinButton *spinbutton_corde = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "spinbutton_corde"));
-	init_spin_button (spinbutton_corde, 0.0, 10000.0, 100.0, 0.1, 1);
-
-	GtkSpinButton *spinbutton_fleche = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "spinbutton_fleche"));
-	init_spin_button (spinbutton_fleche, 0.0, 10000.0, 100.0, 0.1, 1);
-
-	GtkSpinButton *spinbutton_epaisseur = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "spinbutton_epaisseur"));
-	init_spin_button (spinbutton_epaisseur, 0.0, 10000.0, 100.0, 0.1, 1);
-}
-
-
-void on_window1_destroy(GtkObject *object, gpointer user_data){
-  printf("Fermeture de la fenetre.\n");
-  gtk_main_quit();
 }
 
 
@@ -85,3 +64,24 @@ void rafrachir_affichage(){
 	gtk_label_set_text (reynolds,valRey) ;
 
 }
+
+void on_window1_realize (GtkObject *object, gpointer user_data){
+
+	GtkSpinButton *spinbutton_vitesse = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "spinbutton_vitesse"));
+	init_spin_button (spinbutton_vitesse, 0.0, 10000.0, 100.0, 0.1, 1);
+
+	GtkSpinButton *spinbutton_poids = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "spinbutton_poids"));
+	init_spin_button (spinbutton_poids, 0.0, 10000.0, 100.0, 0.1, 1);
+
+	GtkSpinButton *spinbutton_corde = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "spinbutton_corde"));
+	init_spin_button (spinbutton_corde, 0.0, 10000.0, 100.0, 0.1, 1);
+
+	GtkSpinButton *spinbutton_fleche = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "spinbutton_fleche"));
+	init_spin_button (spinbutton_fleche, 0.0, 10000.0, 100.0, 0.1, 1);
+
+	GtkSpinButton *spinbutton_epaisseur = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "spinbutton_epaisseur"));
+	init_spin_button (spinbutton_epaisseur, 0.0, 10000.0, 100.0, 0.1, 1);
+
+	rafrachir_affichage();
+}
+
