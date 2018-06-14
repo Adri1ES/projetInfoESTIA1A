@@ -20,7 +20,6 @@ void init_spin_button (GtkSpinButton *spb, double min_val, double max_val, doubl
   gtk_spin_button_set_increments (spb, step, step) ;
 }
 
-
 void rafrachir_affichage(){
 	char valEpaiRe[256];
 	char valCamb[256];

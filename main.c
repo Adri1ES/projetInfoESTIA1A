@@ -3,11 +3,11 @@
 #include <gtk/gtk.h>
 #include "callbacks.h"
 
-GtkBuilder *builder;
 
 int main (int argc, char *argv[]) {
   GtkWidget  *window1;
 
+b
   /* Initialisation de GTK */
   gtk_init (&argc, &argv);
 
