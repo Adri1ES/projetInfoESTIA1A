@@ -3,6 +3,7 @@
 #include <gtk/gtk.h>
 #include "callbacks.h"
 
+GtkBuilder *builder;
 
 int main (int argc, char *argv[]) {
   GtkWidget  *window1;
@@ -12,7 +13,7 @@ int main (int argc, char *argv[]) {
 
   /* Creation des widgets de l'interface a partir du fichier XML de Glade, grace au builder GTK */
   builder = gtk_builder_new ();
-  if (gtk_builder_add_from_file (builder, "projet_info.glade", NULL) == 0) {
+  if (gtk_builder_add_from_file (builder, "projet_info_V2.glade", NULL) == 0) {
     fprintf (stderr, "Erreur: ouverture du fichier GLADE\n") ;
     exit(EXIT_FAILURE);
   }
