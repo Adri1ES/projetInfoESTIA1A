@@ -7,7 +7,6 @@
 int main (int argc, char *argv[]) {
   GtkWidget  *window1;
 
-b
   /* Initialisation de GTK */
   gtk_init (&argc, &argv);
 
