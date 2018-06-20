@@ -25,6 +25,7 @@ void on_window1_destroy(GtkObject *object, gpointer user_data){
   gtk_main_quit();
 }
 
+
 void on_window1_realize (GtkObject *object, gpointer user_data){
 
 	GtkSpinButton *spinbutton_vitesse = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "spinbutton_vitesse"));
@@ -41,37 +42,57 @@ void on_window1_realize (GtkObject *object, gpointer user_data){
 
 }
 
+/* --------------------------------- fonction pour griser les cases inutilisées --------------------------------------*/
+
+void griser(){
+	gboolean option_profil,option_caracteristiques,option_lesDeux;
+
+	GtkFrame *frame_resultat = GTK_FRAME (gtk_builder_get_object (builder, "frame_resultat"));
+	GtkFrame *frame_donnee = GTK_FRAME (gtk_builder_get_object (builder, "frame_donnee"));
+	GtkFrame *frame_type = GTK_FRAME (gtk_builder_get_object (builder, "frame_type"));
+	GtkFrame *frame_carac = GTK_FRAME (gtk_builder_get_object (builder, "frame_carac"));
+	GtkRadioButton *radiobutton_profil = GTK_RADIO_BUTTON(gtk_builder_get_object (builder, "radiobutton_profil"));
+	GtkRadioButton *radiobutton_caracteristiques = GTK_RADIO_BUTTON(gtk_builder_get_object (builder, "radiobutton_caracteristiques"));
+	GtkRadioButton *radiobutton_lesDeux = GTK_RADIO_BUTTON(gtk_builder_get_object (builder, "radiobutton_lesDeux"));
+
+	option_profil = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_profil));
+	option_caracteristiques = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_caracteristiques));
+	option_lesDeux = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux));
+
+	if (option_profil){
+		gtk_widget_set_sensitive( GTK_WIDGET(frame_resultat), 1);
+		gtk_widget_set_sensitive( GTK_WIDGET(frame_donnee), 1);
+		gtk_widget_set_sensitive( GTK_WIDGET(frame_type), 0);
+		gtk_widget_set_sensitive( GTK_WIDGET(frame_carac), 0);
+	}
+	else if (option_caracteristiques){
+		gtk_widget_set_sensitive( GTK_WIDGET(frame_resultat), 0);
+		gtk_widget_set_sensitive( GTK_WIDGET(frame_donnee), 0);
+		gtk_widget_set_sensitive( GTK_WIDGET(frame_type), 1);
+		gtk_widget_set_sensitive( GTK_WIDGET(frame_carac), 1);
+	}
+	else if (option_lesDeux){
+		gtk_widget_set_sensitive( GTK_WIDGET(frame_resultat), 1);
+		gtk_widget_set_sensitive( GTK_WIDGET(frame_donnee), 1);
+		gtk_widget_set_sensitive( GTK_WIDGET(frame_type), 1);
+		gtk_widget_set_sensitive( GTK_WIDGET(frame_carac), 1);
+		}
+}
+
 void on_radiobutton_profil_toggled(GtkObject *object, gpointer user_data){
+	griser();
 }
 
 void on_radiobutton_caracteristiques_toggled(GtkObject *object, gpointer user_data){
-}
+	griser();
+	}
 
 void on_radiobutton_lesDeux_toggled(GtkObject *object, gpointer user_data){
-}
-
-/*
-GtkWidget*rb_profil;
-
-void on_radiobutton_profil_toggled(GtkObject *object, gpointer user_data){
-	GtkLabel *label4 = GTK_LABEL (gtk_builder_get_object (builder, "label4"));
-
-	rb_profil = gtk_radio_button_new_with_label (NULL, "radiobutton_profil");
-	if (gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (rb_profil), TRUE))
-	gtk_widget_set_sensitive( label4 );
-
-}
-GtkWidget*radiobutton_caracteristiques;
-void on_radiobutton_caracteristiques_toggled(GtkObject *object, gpointer user_data){
-
-	GtkLabel *label3 = GTK_LABEL (gtk_builder_get_object (builder, "label3"));
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_caracteristiques)))
-	gtk_widget_set_sensitive( label3, FALSE );
-
-}
-*/
+	griser();
+	}
 
  /* --------------------------------------  obtenir un profil --------------------------------------------- */
+
 
 void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 	char valEpaiRe[256];
@@ -91,7 +112,7 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 	GtkLabel *epaisseurRelative = GTK_LABEL (gtk_builder_get_object (builder, "resultat_epaisseurRelative"));
 	GtkLabel *reynolds = GTK_LABEL (gtk_builder_get_object (builder, "resultat_reynolds"));
 	GtkLabel *cambrure = GTK_LABEL (gtk_builder_get_object(builder,"resultat_cambrure"));
-	/*GtkWidget * resultat_image = g_object_get_data(G_OBJECT(builder), "resultat_image");*/
+	GtkImage *resultat_image = GTK_IMAGE (gtk_builder_get_object (builder, "resultat_image"));
 
 	/* Recuperer le contenu des zones de saisie */
 	Epaisseur = gtk_spin_button_get_value (spinbutton_epaisseur);
@@ -113,18 +134,16 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 	gtk_label_set_text (cambrure, valCamb) ;
 	gtk_label_set_text (reynolds, valRey) ;
 
-	/*if (valeur_epaisseurRelative>10){
-		  gtk_image_set_from_file(GTK_IMAGE(resultat_image), "convexe.png");
+	if (valeur_epaisseurRelative<2){
+		gtk_image_set_from_file(GTK_IMAGE(resultat_image), "convexe.png");
 	}
-	else{
-		  gtk_image_set_from_file(GTK_IMAGE(resultat_image), "biconvexe.png");
-	}*/
-
+	if (valeur_cambrure>5 ){
+		gtk_image_set_from_file(GTK_IMAGE(resultat_image), "biconvexe.png");
+	}
+	if (valeur_epaisseurRelative>5 ){
+		gtk_image_set_from_file(GTK_IMAGE(resultat_image), "supercritique.png");
+	}
 }
-
-
-
-
 
 
 
@@ -174,14 +193,13 @@ G_MODULE_EXPORT void on_button_export_csv_clicked(GtkObject *object, gpointer us
 
 
 	/* Traitement */
-	Viscosite_air = 15,6*pow(10,-6);
+	Viscosite_air            = 15,6*pow(10,-6);
 	valeur_epaisseurRelative = Epaisseur/Corde;
-	valeur_cambrure = Fleche/Corde;
-	valeur_reynolds = (Vitesse*Corde)/Viscosite_air;
+	valeur_cambrure          = Fleche/Corde;
+	valeur_reynolds          = (Vitesse*Corde)/Viscosite_air;
 
 	GtkFileChooserButton *filechooserbutton_csv = GTK_FILE_CHOOSER_BUTTON(gtk_builder_get_object(builder, "filechooserbutton_csv"));
 	char *filename = gtk_file_chooser_get_filename(filechooserbutton_csv);
-
 
 	FILE * file;
 	file = fopen( filename, "w");
@@ -191,7 +209,7 @@ G_MODULE_EXPORT void on_button_export_csv_clicked(GtkObject *object, gpointer us
 	fprintf(file, "fleche (m); %.1f \n",Fleche);
 	fprintf(file, "vitesse (m/s); %.1f \n",Vitesse);
 	fprintf(file, "Epaisseur Relative (m); %.1f \n",valeur_epaisseurRelative);
-	fprintf(file, "cambrure ; %.1f \n", valeur_cambrure);
+	fprintf(file, "Comparer ; %.1f \n", valeur_cambrure);
 	fprintf(file, "reynolds ; %.1f \n", valeur_reynolds);
 
 	fclose(file);
