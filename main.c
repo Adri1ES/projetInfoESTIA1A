@@ -20,12 +20,12 @@ int main (int argc, char *argv[]) {
 
   /* Recuperation du widget de la fenetre principale */
   window1 = GTK_WIDGET (gtk_builder_get_object (builder, "window1"));
-  gtk_window_set_default_size(GTK_WINDOW(window1), 1000, 800);
-  gtk_window_set_title(GTK_WINDOW(window1), "Projet informatique : sujet T4 ");
+  /*gtk_window_set_default_size(GTK_WINDOW(window1), 1000, 800);*/
+     gtk_window_set_title(GTK_WINDOW( window1), "Projet informatique : Parametres d'une aile d'avion ");
+
 
   /* Connection des fonctions de rappel avec les signaux de l'interface */
   gtk_builder_connect_signals (builder, NULL);
-
 
   /* Changement de la fenetre principale a l'etat visible */
   gtk_widget_show (window1);
@@ -39,3 +39,4 @@ int main (int argc, char *argv[]) {
   /* Fin du programme */
   return EXIT_SUCCESS;
 }
+

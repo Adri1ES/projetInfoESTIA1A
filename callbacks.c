@@ -12,17 +12,17 @@ extern GtkBuilder *builder;
 
 
 void init_spin_button (GtkSpinButton *spb, double min_val, double max_val, double val, double step, int digits) {
-  gtk_spin_button_set_digits (spb, digits) ;
-  gtk_spin_button_set_range (spb, min_val, max_val) ;
-  gtk_spin_button_set_value (spb, val) ;
-  gtk_spin_button_set_increments (spb, step, step) ;
+	gtk_spin_button_set_digits (spb, digits) ;
+	gtk_spin_button_set_range (spb, min_val, max_val) ;
+	gtk_spin_button_set_value (spb, val) ;
+	gtk_spin_button_set_increments (spb, step, step) ;
 }
 
 
 
 void on_window1_destroy(GtkObject *object, gpointer user_data){
-  printf("Fermeture de la fenetre.\n");
-  gtk_main_quit();
+	printf("Fermeture de la fenetre.\n");
+	gtk_main_quit();
 }
 
 
@@ -135,13 +135,13 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 	gtk_label_set_text (reynolds, valRey) ;
 
 	if (valeur_epaisseurRelative<2){
-		gtk_image_set_from_file(GTK_IMAGE(resultat_image), "convexe.png");
+		gtk_image_set_from_file(GTK_IMAGE(resultat_image), "images/convexe.png");
 	}
-	if (valeur_cambrure>5 ){
-		gtk_image_set_from_file(GTK_IMAGE(resultat_image), "biconvexe.png");
+	if (valeur_epaisseurRelative<5 &&  valeur_epaisseurRelative>2 ){
+		gtk_image_set_from_file(GTK_IMAGE(resultat_image), "images/biconvexe.png");
 	}
 	if (valeur_epaisseurRelative>5 ){
-		gtk_image_set_from_file(GTK_IMAGE(resultat_image), "supercritique.png");
+		gtk_image_set_from_file(GTK_IMAGE(resultat_image), "images/supercritique.png");
 	}
 }
 
@@ -151,23 +151,35 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 
 
 void rafraichir_affichage () {
-  GtkComboBox *combobox_profil = GTK_COMBO_BOX (gtk_builder_get_object (builder, "combobox_profil"));
-  GtkWidget * image_profil = g_object_get_data(G_OBJECT(builder), "image_profil");
+	GtkRadioButton *radiobutton_profil = GTK_RADIO_BUTTON(gtk_builder_get_object (builder, "radiobutton_profil"));
+	GtkRadioButton *radiobutton_caracteristiques = GTK_RADIO_BUTTON(gtk_builder_get_object (builder, "radiobutton_caracteristiques"));
+	GtkRadioButton *radiobutton_lesDeux = GTK_RADIO_BUTTON(gtk_builder_get_object (builder, "radiobutton_lesDeux"));
 
+	GtkComboBox *combobox_profil = GTK_COMBO_BOX (gtk_builder_get_object (builder, "combobox_profil"));
+	GtkImage *image_profil = GTK_IMAGE (gtk_builder_get_object (builder, "image_profil"));
+	GtkImage *resultat_image = GTK_IMAGE (gtk_builder_get_object (builder, "resultat_image"));
 
-  int i = gtk_combo_box_get_active (combobox_profil) ;
-  if (i==0){
-	  gtk_image_set_from_file(GTK_IMAGE(image_profil), "convexe.png");
-  }
-  else if (i==1){
-	  gtk_image_set_from_file(GTK_IMAGE(image_profil), "biconvexe.png");
-  }
-  else if (i==2){
-	  gtk_image_set_from_file(GTK_IMAGE(image_profil), "creux.png");
-  }
-  else if (i==3){
-	  gtk_image_set_from_file(GTK_IMAGE(image_profil), "images/supercritique.png");
-  }
+	int i = gtk_combo_box_get_active (combobox_profil) ;
+			if (i==0){
+			  gtk_image_set_from_file(GTK_IMAGE(image_profil), "images/convexe.png");
+			  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux)))
+			  gtk_image_set_from_file(GTK_IMAGE(resultat_image), "images/convexe.png");
+			}
+			else if (i==1){
+			  gtk_image_set_from_file(GTK_IMAGE(image_profil), "images/biconvexe.png");
+			  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux)))
+			  gtk_image_set_from_file(GTK_IMAGE(resultat_image), "images/biconvexe.png");
+			}
+			else if (i==2){
+			  gtk_image_set_from_file(GTK_IMAGE(image_profil), "images/creux.png");
+			  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux)))
+			  gtk_image_set_from_file(GTK_IMAGE(resultat_image), "images/creux.png");
+			}
+			else if (i==3){
+			  gtk_image_set_from_file(GTK_IMAGE(image_profil), "images/supercritique.png");
+			  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux)))
+			  gtk_image_set_from_file(GTK_IMAGE(resultat_image), "images/supercritique.png");
+			}
 }
 
 void on_combobox_profil_changed (GtkObject *object, gpointer user_data) {
@@ -211,6 +223,15 @@ G_MODULE_EXPORT void on_button_export_csv_clicked(GtkObject *object, gpointer us
 	fprintf(file, "Epaisseur Relative (m); %.1f \n",valeur_epaisseurRelative);
 	fprintf(file, "Comparer ; %.1f \n", valeur_cambrure);
 	fprintf(file, "reynolds ; %.1f \n", valeur_reynolds);
+
+	GtkComboBox *combobox_profil = GTK_COMBO_BOX (gtk_builder_get_object (builder, "combobox_profil"));
+	int i = gtk_combo_box_get_active (combobox_profil) ;
+	if (i==0 || valeur_epaisseurRelative<2 )
+	fprintf(file, "profil ; convexe \n");
+	if (i==1 || (valeur_epaisseurRelative<5 && valeur_epaisseurRelative>2)  )
+		fprintf(file, "profil ; biconvexe \n");
+	if (i==3 || valeur_epaisseurRelative>5  )
+			fprintf(file, "profil ; supercritique \n");
 
 	fclose(file);
 

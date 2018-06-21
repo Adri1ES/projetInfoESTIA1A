@@ -2,6 +2,11 @@
 <interface>
   <requires lib="gtk+" version="2.24"/>
   <!-- interface-naming-policy project-wide -->
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
   <object class="GtkListStore" id="liststore1">
     <columns>
       <!-- column-name gchararray1 -->
@@ -343,7 +348,7 @@
                                                   <object class="GtkImage" id="resultat_image">
                                                     <property name="visible">True</property>
                                                     <property name="can_focus">False</property>
-                                                    <property name="stock">gtk-missing-image</property>
+                                                    <property name="pixbuf">accueil.png</property>
                                                   </object>
                                                 </child>
                                               </object>
@@ -367,7 +372,7 @@
                                     </child>
                                     <child>
                                       <object class="GtkButton" id="button_rafraichir">
-                                        <property name="label" translatable="yes">rafraichir</property>
+                                        <property name="label" translatable="yes">button</property>
                                         <property name="use_action_appearance">False</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
@@ -478,7 +483,9 @@
                                           <object class="GtkImage" id="image_profil">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
-                                            <property name="stock">gtk-missing-image</property>
+                                            <property name="ypad">2</property>
+                                            <property name="pixbuf">accueil.png</property>
+                                            <property name="icon-size">0</property>
                                           </object>
                                           <packing>
                                             <property name="top_attach">1</property>
