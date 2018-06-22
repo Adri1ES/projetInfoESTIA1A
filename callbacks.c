@@ -45,7 +45,7 @@ void on_window1_realize (GtkObject *object, gpointer user_data){
 /* --------------------------------- fonction pour griser les cases inutilisées --------------------------------------*/
 
 void griser(){
-	gboolean option_profil,option_caracteristiques,option_lesDeux;
+	gboolean option_profil, option_caracteristiques, option_lesDeux;
 
 	GtkFrame *frame_resultat = GTK_FRAME (gtk_builder_get_object (builder, "frame_resultat"));
 	GtkFrame *frame_donnee = GTK_FRAME (gtk_builder_get_object (builder, "frame_donnee"));
