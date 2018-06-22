@@ -111,7 +111,7 @@
                                       <object class="GtkLabel" id="label_Fleche">
                                         <property name="visible">True</property>
                                         <property name="can_focus">False</property>
-                                        <property name="label" translatable="yes">Fleche</property>
+                                        <property name="label" translatable="yes">Fleche (m)</property>
                                       </object>
                                       <packing>
                                         <property name="top_attach">2</property>

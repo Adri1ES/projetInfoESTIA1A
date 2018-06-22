@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -119,15 +118,15 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 	Corde = gtk_spin_button_get_value (spinbutton_corde);
 	Fleche= gtk_spin_button_get_value (spinbutton_fleche);
 	Vitesse = gtk_spin_button_get_value (spinbutton_vitesse);
-	Viscosite_air = 15,6*pow(10,-6);
+	Viscosite_air = 15.6*pow(10,-6);
 
 	/* Traitement */
 	valeur_epaisseurRelative = Epaisseur/Corde;
-	sprintf (valEpaiRe, "%.1f m", valeur_epaisseurRelative) ;
+	sprintf (valEpaiRe, "%.1f", valeur_epaisseurRelative) ;
 	valeur_cambrure = Fleche/Corde;
 	sprintf (valCamb, "%.1f ", valeur_cambrure) ;
 	valeur_reynolds = (Vitesse*Corde)/Viscosite_air;
-	sprintf (valRey, "%.1f ", valeur_reynolds) ;
+	sprintf (valRey, " %.0f ", valeur_reynolds) ;
 
 	/* affiche le resultat */
 	gtk_label_set_text (epaisseurRelative, valEpaiRe) ;
