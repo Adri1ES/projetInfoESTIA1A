@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -7,6 +6,11 @@
 #include <math.h>
 #include "callbacks.h"
 
+/*-----------------------------------------------constantes physiques utilisees-------------------------*/
+const double Viscosite_air = 15.6*pow(10,-6); /* en Pa*s */
+const double MasseVolAir = 1.225; /* en kg/m3 */
+const double g=9.81; /* en m*s^-2 */
+const double vitesseSon= 340.3; /* en m*s^-1 */
 
 extern GtkBuilder *builder;
 
@@ -122,10 +126,11 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 	char valTrai[256];
 	char valPoids[256];
 	char valFin[256];
-	double Epaisseur, Corde, Fleche, Vitesse, Surface, CoefT, CoefP, Masse, MasseVolAir, Viscosite_air, g;
-	double valeur_epaisseurRelative, valeur_cambrure, valeur_reynolds,valeur_portance, valeur_trainee, valeur_finesse, valeur_poids;
+	char valMach[256];
+	double Epaisseur, Corde, Fleche, Vitesse, Surface, CoefT, CoefP, Masse;
+	double valeur_epaisseurRelative, valeur_cambrure, valeur_reynolds, valeur_portance, valeur_trainee, valeur_finesse, valeur_poids, valeur_mach;
 
-	/* donn�es que l'utilisateur doit rentrer */
+	/* donnees que l'utilisateur doit rentrer */
 
 	GtkSpinButton *spinbutton_vitesse = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_vitesse"));
 	GtkSpinButton *spinbutton_corde = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_corde"));
@@ -136,6 +141,7 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 	GtkSpinButton *spinbutton_Cz = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_Cz"));
 	GtkSpinButton *spinbutton_masse = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_masse"));
 
+	/* donnees facultatives */
 	GtkCheckButton *checkbutton_Cx = GTK_CHECK_BUTTON(gtk_builder_get_object (builder, "checkbutton_Cx"));
 	GtkCheckButton *checkbutton_Cz = GTK_CHECK_BUTTON(gtk_builder_get_object (builder, "checkbutton_Cz"));
 	GtkCheckButton *checkbutton_masse = GTK_CHECK_BUTTON(gtk_builder_get_object (builder, "checkbutton_masse"));
@@ -149,6 +155,7 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 
 	GtkLabel *epaisseurRelative = GTK_LABEL (gtk_builder_get_object (builder, "resultat_epaisseurRelative"));
 	GtkLabel *reynolds = GTK_LABEL (gtk_builder_get_object (builder, "resultat_reynolds"));
+	GtkLabel *mach = GTK_LABEL (gtk_builder_get_object (builder, "resultat_mach"));
 	GtkLabel *cambrure = GTK_LABEL (gtk_builder_get_object(builder,"resultat_cambrure"));
 	GtkLabel *portance = GTK_LABEL (gtk_builder_get_object (builder, "resultat_portance"));
 	GtkLabel *trainee = GTK_LABEL (gtk_builder_get_object (builder, "resultat_trainee"));
@@ -177,9 +184,6 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 	CoefP = gtk_spin_button_get_value (spinbutton_Cz);
 	CoefT = gtk_spin_button_get_value (spinbutton_Cx);
 	Masse = gtk_spin_button_get_value (spinbutton_masse);
-	Viscosite_air = 15.6*pow(10,-6);
-	MasseVolAir = 1.225; /* en kg/m3 */
-	g=9.81;
 	char couleurP[256];
 	char couleurT[256];
 	char couleurPds[256];
@@ -194,6 +198,9 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 		sprintf (valCamb, "%.1f ", valeur_cambrure) ;
 	valeur_reynolds = (Vitesse*Corde)/Viscosite_air;
 		sprintf (valRey, "%.0f ", valeur_reynolds) ;
+	valeur_mach=Vitesse/vitesseSon;
+		sprintf (valMach, "%.1f", valeur_mach);
+
 
 		/* calcul de la portance */
 
@@ -252,6 +259,7 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 	gtk_label_set_text (epaisseurRelative, valEpaiRe) ;
 	gtk_label_set_text (cambrure, valCamb) ;
 	gtk_label_set_text (reynolds, valRey) ;
+	gtk_label_set_text (mach, valMach) ;
 	gtk_label_set_text (portance, valPort) ;
 	gtk_label_set_text (trainee, valTrai) ;
 	gtk_label_set_text (finesse, valFin) ;
@@ -315,11 +323,11 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 
 	char modeleCorrect[256];
 
-		if (valeur_epaisseurRelative < 5){
+		if (valeur_mach < 0.3){
 			sprintf(modeleCorrect,  "<b><span foreground=\"#006400\"> Modele correct </span></b>");
 		}
 		else {
-			sprintf(modeleCorrect, "<b><span foreground=\"#FF0000\"> Modele incorrect  </span></b>");
+			sprintf(modeleCorrect, "<b><span foreground=\"#FF0000\"> Modele incorrect, vitesse de l'aeronef trop importante  </span></b>");
 		}
 
 		gtk_label_set_markup(GTK_LABEL(label_message), modeleCorrect);
@@ -415,8 +423,8 @@ void on_combobox_profil_changed (GtkObject *object, gpointer user_data) {
 
 
 void on_button_export_csv_clicked(GtkObject *object, gpointer user_data){
-	double Epaisseur, Corde, Fleche, Vitesse, Viscosite_air;
-	double valeur_epaisseurRelative, valeur_cambrure, valeur_reynolds;
+	double Epaisseur, Corde, Fleche, Vitesse, Surface, CoefT, CoefP, Masse;
+	double valeur_epaisseurRelative, valeur_cambrure, valeur_reynolds, valeur_portance, valeur_trainee, valeur_finesse, valeur_poids, valeur_mach;
 
 	/* donnees que l'utilisateur doit rentrer */
 
@@ -424,21 +432,65 @@ void on_button_export_csv_clicked(GtkObject *object, gpointer user_data){
 	GtkSpinButton *spinbutton_corde     = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_corde"));
 	GtkSpinButton *spinbutton_fleche    = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_fleche"));
 	GtkSpinButton *spinbutton_epaisseur = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_epaisseur"));
+	GtkSpinButton *spinbutton_surface = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_surface"));
+	GtkSpinButton *spinbutton_Cx = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_Cx"));
+	GtkSpinButton *spinbutton_Cz = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_Cz"));
+	GtkSpinButton *spinbutton_masse = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_masse"));
 
+	/* donnees facultatives */
+	GtkCheckButton *checkbutton_Cx = GTK_CHECK_BUTTON(gtk_builder_get_object (builder, "checkbutton_Cx"));
+	GtkCheckButton *checkbutton_Cz = GTK_CHECK_BUTTON(gtk_builder_get_object (builder, "checkbutton_Cz"));
+	GtkCheckButton *checkbutton_masse = GTK_CHECK_BUTTON(gtk_builder_get_object (builder, "checkbutton_masse"));
 
 	/* Recuperer le contenu des zones de saisie */
 	Epaisseur = gtk_spin_button_get_value (spinbutton_epaisseur);
 	Corde     = gtk_spin_button_get_value (spinbutton_corde);
 	Fleche    = gtk_spin_button_get_value (spinbutton_fleche);
 	Vitesse   = gtk_spin_button_get_value (spinbutton_vitesse);
+	Surface = gtk_spin_button_get_value (spinbutton_surface);
+	CoefP = gtk_spin_button_get_value (spinbutton_Cz);
+	CoefT = gtk_spin_button_get_value (spinbutton_Cx);
+	Masse = gtk_spin_button_get_value (spinbutton_masse);
 
 
 	/* Traitement */
-	Viscosite_air            = 15,6*pow(10,-6);
 	valeur_epaisseurRelative = (Epaisseur/Corde)*100;
 	valeur_cambrure          = Fleche/Corde;
 	valeur_reynolds          = (Vitesse*Corde)/Viscosite_air;
+	valeur_mach=Vitesse/vitesseSon;
 
+	/* calcul de la portance */
+
+if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton_Cz))){
+	valeur_portance = 0.5 *Surface*MasseVolAir*Vitesse*Vitesse*CoefP;
+}
+else{
+}
+
+/* calcul de la trainee*/
+
+if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton_Cx))){
+	valeur_trainee = 0.5*Surface*MasseVolAir*Vitesse*Vitesse *CoefT;
+}
+else{
+}
+/* calcul du poids */
+
+if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton_masse))){
+	valeur_poids = Masse * g ;
+}
+else{
+
+}
+
+/* calcul de la finesse */
+
+if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton_Cz)) && gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbutton_Cx))){
+	valeur_finesse = valeur_portance /valeur_trainee;
+}
+else{
+
+}
 
 	GtkFileChooserButton *filechooserbutton_csv = GTK_FILE_CHOOSER_BUTTON(gtk_builder_get_object(builder, "filechooserbutton_csv"));
 	char *filename = gtk_file_chooser_get_filename(filechooserbutton_csv);
@@ -453,6 +505,15 @@ void on_button_export_csv_clicked(GtkObject *object, gpointer user_data){
 	fprintf(file, "Epaisseur Relative; %.1f \n",valeur_epaisseurRelative);
 	fprintf(file, "Cambrure ; %.1f \n", valeur_cambrure);
 	fprintf(file, "Reynolds ; %.1f \n", valeur_reynolds);
+	fprintf(file, "Mach ; %.1f \n", valeur_mach);
+	fprintf(file, "Portance (N) ; %.1f \n", valeur_portance);
+	fprintf(file, "Trainee (N) ; %.1f \n", valeur_trainee);
+	fprintf(file, "Finesse ; %.1f \n", valeur_finesse);
+	fprintf(file, "Poids (kg) ; %.1f \n", valeur_poids);
+
+
+
+
 
 	/* enregistrer le profil choisi avec le combobox ou selon les donnees obtenues  */
 
