@@ -8,3 +8,4 @@ configuration.jpg
 .project
 .cproject
 /Debug/
+*.cpp
