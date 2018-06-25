@@ -29,9 +29,10 @@ void init_spin_button (GtkSpinButton *spb, double min_val, double max_val, doubl
 
 void type_avion ()  {
 	gboolean option_1,option_2,option_3;
-	double VitesseModelisme_init, CordeModelisme_init,FlecheModelisme_init,EpaisseurModelisme_init, SurfaceModelisme_init;
-	double VitesseULM_init, CordeULM_init, FlecheULM_init, EpaisseurULM_init, SurfaceULM_init;
-	double VitesseTourisme_init, CordeTourisme_init, FlecheTourisme_init, EpaisseurTourisme_init, SurfaceTourisme_init ;
+	float VitesseModelisme_init, CordeModelisme_init,FlecheModelisme_init,EpaisseurModelisme_init, SurfaceModelisme_init, MasseModelisme_init;
+	VitesseModelisme_init=0, CordeModelisme_init=0, FlecheModelisme_init=0, EpaisseurModelisme_init=0, SurfaceModelisme_init=0, MasseModelisme_init=0;
+	float VitesseULM_init, CordeULM_init, FlecheULM_init, EpaisseurULM_init, SurfaceULM_init, MasseULM_init;
+	float VitesseTourisme_init, CordeTourisme_init, FlecheTourisme_init, EpaisseurTourisme_init, SurfaceTourisme_init, MasseTourisme_init ;
 
 	/* recupere les spinbutton */
 	GtkSpinButton *spinbutton_vitesse = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_vitesse"));
@@ -54,28 +55,13 @@ void type_avion ()  {
 
 
 	FILE *instructions;
-	instructions = fopen("instructions", "rb");
+	instructions = fopen("instructions.txt", "r");
 	if (instructions == NULL) {
   	    fprintf (stderr, "Erreur ouverture fichier en lecture\n") ;
   	  }
   	else{
-		fread(&VitesseModelisme_init, sizeof(double), 1, instructions);
-		fread(&CordeModelisme_init, sizeof(double), 1, instructions);
-		fread(&FlecheModelisme_init, sizeof(double), 1, instructions);
-		fread(&EpaisseurModelisme_init, sizeof(double), 1, instructions);
-		fread(&SurfaceModelisme_init, sizeof(double), 1, instructions);
-
-		fread(&VitesseULM_init, sizeof(double), 1, instructions);
-		fread(&CordeULM_init, sizeof(double), 1, instructions);
-		fread(&FlecheULM_init, sizeof(double), 1, instructions);
-		fread(&EpaisseurULM_init, sizeof(double), 1, instructions);
-		fread(&SurfaceULM_init, sizeof(double), 1, instructions);
-
-		fread(&VitesseTourisme_init, sizeof(double), 1, instructions);
-		fread(&CordeTourisme_init, sizeof(double), 1, instructions);
-		fread(&FlecheTourisme_init, sizeof(double), 1, instructions);
-		fread(&EpaisseurTourisme_init, sizeof(double), 1, instructions);
-		fread(&SurfaceTourisme_init, sizeof(double), 1, instructions);
+  		rewind(instructions);
+		fscanf(instructions, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", &VitesseModelisme_init, &CordeModelisme_init, &FlecheModelisme_init, &EpaisseurModelisme_init, &SurfaceModelisme_init, &VitesseULM_init, &CordeULM_init, &FlecheULM_init, &EpaisseurULM_init, &SurfaceULM_init, &VitesseTourisme_init, &CordeTourisme_init, &FlecheTourisme_init, &EpaisseurTourisme_init, &SurfaceTourisme_init);
 
   	}
 	fclose(instructions);
@@ -240,6 +226,7 @@ void on_checkbutton_masse_toggled(GtkObject *object, gpointer user_data){
 /* ------------------------Le bouton rafraichir --------------------------*/
 
 void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
+	type_avion();
 	char valEpaiRe[256];
 	char valCamb[256];
 	char valRey[256];
@@ -256,7 +243,7 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 	GtkRadioButton *radiobutton2 = GTK_RADIO_BUTTON(gtk_builder_get_object (builder, "radiobutton2"));
 	GtkRadioButton *radiobutton3 = GTK_RADIO_BUTTON(gtk_builder_get_object (builder, "radiobutton3"));
 
-	/* données que l'utilisateur doit rentrer */
+	/* donnï¿½es que l'utilisateur doit rentrer */
 
 	GtkSpinButton *spinbutton_vitesse = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_vitesse"));
 	GtkSpinButton *spinbutton_corde = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_corde"));
@@ -280,7 +267,7 @@ void on_button_rafraichir_clicked(GtkObject *object, gpointer user_data){
 	GtkLabel *labelTrainee = GTK_LABEL (gtk_builder_get_object (builder, "labelTrainee"));
 	GtkLabel *labelFinesse = GTK_LABEL (gtk_builder_get_object (builder, "labelFinesse"));
 
-	/* données que l'utilisateur veut obtenir */
+	/* donnï¿½es que l'utilisateur veut obtenir */
 
 	GtkLabel *epaisseurRelative = GTK_LABEL (gtk_builder_get_object (builder, "resultat_epaisseurRelative"));
 	GtkLabel *reynolds = GTK_LABEL (gtk_builder_get_object (builder, "resultat_reynolds"));
@@ -525,7 +512,7 @@ void rafraichir_affichage () {
 
 	if (i==0){
 		gtk_image_set_from_file(GTK_IMAGE(image_profil), "images/convexe.png");
-		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux))){  /* lie les deux images lorsque radio button 'toutes les donnees' est activé */
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux))){  /* lie les deux images lorsque radio button 'toutes les donnees' est activï¿½ */
 			gtk_image_set_from_file(GTK_IMAGE(resultat_image), "images/convexe.png");
 		}
 
@@ -544,7 +531,7 @@ void rafraichir_affichage () {
 
 	else if (i==1){
 		gtk_image_set_from_file(GTK_IMAGE(image_profil), "images/biconvexe.png");
-		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux))){  /* lie les deux images lorsque radio button 'toutes les donnees' est activé */
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux))){  /* lie les deux images lorsque radio button 'toutes les donnees' est activï¿½ */
 			gtk_image_set_from_file(GTK_IMAGE(resultat_image), "images/biconvexe.png");
 		}
 
@@ -564,12 +551,12 @@ void rafraichir_affichage () {
 	else if (i==2){
 
 		gtk_image_set_from_file(GTK_IMAGE(image_profil), "images/creux.png");
-			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux))){  /* lie les deux images lorsque radio button 'toutes les donnees' est activé */
+			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux))){  /* lie les deux images lorsque radio button 'toutes les donnees' est activï¿½ */
 				gtk_image_set_from_file(GTK_IMAGE(resultat_image), "images/creux.png");
 			}
 
 			/* Traitement */
-			sprintf (Val_finesse, "16.25 max (angle incidence de 2°)") ;
+			sprintf (Val_finesse, "16.25 max (angle incidence de 2ï¿½)") ;
 			gtk_label_set_text (caracteristique_finesse, Val_finesse) ;
 			sprintf (Val_cambrure, "5.1 %% ") ;
 			gtk_label_set_text (caracteristique_cambrure, Val_cambrure) ;
@@ -583,7 +570,7 @@ void rafraichir_affichage () {
 
 	else if (i==3){
 		gtk_image_set_from_file(GTK_IMAGE(image_profil), "images/supercritique.png");
-		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux))){  /* lie les deux images lorsque radio button 'toutes les donnees' est activé */
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux))){  /* lie les deux images lorsque radio button 'toutes les donnees' est activï¿½ */
 			gtk_image_set_from_file(GTK_IMAGE(resultat_image), "images/supercritique.png");
 		}
 		/* Traitement */
@@ -614,7 +601,7 @@ void on_button_export_csv_clicked(GtkObject *object, gpointer user_data){
 	double Epaisseur, Corde, Fleche, Vitesse, Surface, CoefT, CoefP, Masse;
 	double valeur_epaisseurRelative, valeur_cambrure, valeur_reynolds,valeur_portance, valeur_trainee,valeur_finesse, valeur_poids,valeur_mach;
 
-	/* données que l'utilisateur doit rentrer */
+	/* donnï¿½es que l'utilisateur doit rentrer */
 
 	GtkSpinButton *spinbutton_vitesse = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_vitesse"));
 	GtkSpinButton *spinbutton_corde = GTK_SPIN_BUTTON(gtk_builder_get_object(builder, "spinbutton_corde"));
@@ -667,13 +654,13 @@ void on_button_export_csv_clicked(GtkObject *object, gpointer user_data){
 	file = fopen( filename, "w");
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_lesDeux)) || gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radiobutton_profil))){
-		fprintf(file, "-- Donnees rentrées --\n");
+		fprintf(file, "-- Donnees rentrï¿½es --\n");
 		fprintf(file, "Epaisseur (m); %.1f\n",Epaisseur);
 		fprintf(file, "Corde (m); %.1f\n",Corde);
 		fprintf(file, "Fleche (m); %.1f\n",Fleche);
 		fprintf(file, "Vitesse (m/s); %.1f\n",Vitesse);
 		fprintf(file, " ;  \n");
-		fprintf(file, "-- Valeurs calculées --\n");
+		fprintf(file, "-- Valeurs calculï¿½es --\n");
 		fprintf(file, "Epaisseur Relative; %.1f\n",valeur_epaisseurRelative);
 		fprintf(file, "Cambrure ; %.1f\n", valeur_cambrure);
 		fprintf(file, "Reynolds ; %.1f\n", valeur_reynolds);
@@ -744,7 +731,7 @@ void on_button_export_csv_clicked(GtkObject *object, gpointer user_data){
 
 		if (i==2){
 			fprintf(file, "profil ; convexe\n");
-			fprintf(file,"finesse; 16.25 max (angle incidence de 2°)\n");
+			fprintf(file,"finesse; 16.25 max (angle incidence de 2ï¿½)\n");
 			fprintf (file,"cambrure ; 5.1 %%\n") ;
 			fprintf (file,"epaisseur ; 9-10 %%\n") ;
 			fprintf (file,"Cz ; 0.36 (angle 0)\n") ;
@@ -753,7 +740,7 @@ void on_button_export_csv_clicked(GtkObject *object, gpointer user_data){
 
 		if (i==3){
 			fprintf(file, "profil ; convexe\n");
-			fprintf(file,"finesse; 16.25 max (angle incidence de 2°)\n");
+			fprintf(file,"finesse; 16.25 max (angle incidence de 2ï¿½)\n");
 			fprintf (file,"cambrure ; 5.1 %%\n") ;
 			fprintf (file,"epaisseur ; 9-10 %%\n") ;
 			fprintf (file,"Cz ; 0.36 (angle 0)\n") ;
