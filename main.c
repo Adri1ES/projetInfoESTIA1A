@@ -1,7 +1,10 @@
+/* 4_1_GAU_Valentine_GAUCHÉ_Adrien*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include "callbacks.h"
+
 
 GtkBuilder *builder;
 
@@ -39,4 +42,3 @@ int main (int argc, char *argv[]) {
   /* Fin du programme */
   return EXIT_SUCCESS;
 }
-
